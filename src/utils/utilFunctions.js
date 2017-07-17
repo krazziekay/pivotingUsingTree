@@ -38,6 +38,7 @@ export let getTotal = (dataArr, fieldName = 'FIELD8') => {
     else {
         sum = dataArr[fieldName];
     }
+    sum = Math.round(sum * 100) / 100;
     return sum;
 }
 
