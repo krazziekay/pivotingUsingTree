@@ -17,22 +17,19 @@ class App extends Component {
             depthArray : [],
             leafNodes: [],
             pivotArray: [],
-            valueField: 'FIELD8',
+            valueField: 'FIELD7',
             rowFields: [],
             columnFields: []
         };
     }
 
     componentDidMount() {
-        let startTime = performance.now(), endTime = 0;
         let convertedHashKeys = this.convertDataIntoHashKeys(this.state.data);
         this.setState({
             data: [],
             tree : convertedHashKeys.tree,
             depthArray: convertedHashKeys.depth
         }, () => {
-            endTime = performance.now();
-            console.log("Tree making time", endTime - startTime + 'ms' );
             console.log("Tree :: ", this.state);
             this.getLeafNodes();
         });
@@ -77,7 +74,7 @@ class App extends Component {
             let hashKey = '';
             Object.keys(eachData).map( (props) => {
                 // if(_includes(props, 'id')) {
-                if(props === 'FIELD1' || props === 'FIELD3' || props === 'FIELD5' || props === 'FIELD7') {
+                if(props === 'FIELD1' || props === 'FIELD3' || props === 'FIELD5') {
                     mergeFactor += this.encodeKeys(eachData[props]);
                     hashKey += this.encodeKeys(eachData[props]);
                     //Adding depths in each node in the tree
@@ -144,10 +141,8 @@ class App extends Component {
               <div className="row bordered">
                   <div className="col-md-2">
                       <select className="form-control" name="valueField" onChange={this.onChange}>
-                          <option selected="selected" disabled="disabled">FIELD8</option>
-                          {this.state.depthArray.map( (field, index) =>
-                              <option value={getRespectiveField(field.fieldName)} key={index}>{getRespectiveField(field.fieldName)}</option>
-                          )}
+                          <option value="FIELD7" >FIELD7</option>
+                          <option value="FIELD8" >FIELD8</option>
                       </select>
                   </div>
                   <div className="col-md-10 row">

@@ -85,15 +85,11 @@ Trie.prototype.searchNode = function(key) {
 Trie.prototype.traverse= function(depth) {
     let resArr = [];
     let curNode = this.head.children;
-    let startTime = performance.now();
     recursiveTreeTraversing(curNode, depth, resArr);
-    console.log("Results time ", performance.now() - startTime);
     return resArr;
 }
 
 Trie.prototype.groupByNodes = (fields, nodes) => {
-    console.log("Group by : ", fields, " from this data : ", nodes);
-
     let temp = {};
     nodes.map( (node) => {
         node.value.map( (record) => {
@@ -107,16 +103,13 @@ Trie.prototype.groupByNodes = (fields, nodes) => {
             // })
         } )
     })
-    console.log("Results : ", temp );
 }
 
 
 Trie.prototype.getLeafNodes = function (node = '') {
     let leafNodes = [];
     let curNode = node ? node : this.head.children;
-    let startTime = performance.now();
     recursiveLeafNodeTraversing(curNode, leafNodes);
-    // console.log("Time for getting all the leafnodes ", performance.now() - startTime + 'ms');
     return leafNodes;
 }
 
