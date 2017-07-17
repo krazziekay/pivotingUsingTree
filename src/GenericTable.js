@@ -40,7 +40,7 @@ class GenericTable extends Component {
                                     {firstRow}
                                 </td>
                                 <td>
-                                    {getTotal(this.props.pivotArray[firstRow])}
+                                    {getTotal(this.props.pivotArray[firstRow], this.props.valueField)}
                                 </td>
                             </tr>
                             {

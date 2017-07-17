@@ -199,7 +199,6 @@ class App extends Component {
                                                           {getTotal(row.value, this.state.valueField)}
                                                       </div>
                                                   </td>
-
                                               </tr>
                                               {
                                                   this.state[`${row.nodeName}_${rowIndex}`] ?
