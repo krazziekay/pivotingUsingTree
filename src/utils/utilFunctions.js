@@ -2,7 +2,7 @@
  * Created by rosia on 7/17/17.
  */
 
-export let getRespectiveField = (fieldName) => {
+export let getRespectiveField = (fieldName = 'FIELD1') => {
     let lastString = fieldName.substr(fieldName.length-1, fieldName.length);
     let mappedIndex = parseInt(lastString) + 1;
     return fieldName.substr(0, fieldName.length - 1) + mappedIndex;

@@ -6,7 +6,7 @@ import _indexOf from 'lodash/indexOf';
 import GenericTable from './GenericTable';
 import { getRespectiveField , displayOtherNodes, returnLastIndex, getTotal } from './utils/utilFunctions';
 
-let tree = new Trie()
+let tree = new Trie();
 const CODELENGTH = 6;
 
 class App extends Component {
@@ -153,14 +153,14 @@ class App extends Component {
                   <div className="col-md-10 row">
                       {
                           this.state.columnFields ? this.state.columnFields.map( col =>
-                              <div className="col-md-2 bordered">{col}</div>
+                              <div className="col-md-2 bordered">{getRespectiveField(col)}</div>
                           ) : null
                       }
                       <div className="col-md-3">
                           <select className="form-control" name="columnField" onChange={this.onChange}>
                               <option selected="selected">--Select an option--</option>
                               {this.state.depthArray.map( (field, index) =>
-                                  <option value={field.fieldName} key={index}>{field.fieldName}</option>
+                                  <option value={field.fieldName} key={index}>{getRespectiveField(field.fieldName)}</option>
                               )}
                           </select>
                       </div>
@@ -171,14 +171,14 @@ class App extends Component {
                   <div className="col-md-2 ">
                       {
                           this.state.rowFields ? this.state.rowFields.map( row =>
-                              <div className="col-md-12 bordered">{row}</div>
+                              <div className="col-md-12 bordered">{getRespectiveField(row)}</div>
                           ) : null
                       }
                       <div className="col-md-12">
                           <select className="form-control" name="rowField" onChange={this.onChange}>
                               <option selected="selected">--Select an option--</option>
                               {this.state.depthArray.map( (field, index) =>
-                                  <option value={field.fieldName} key={index}>{field.fieldName}</option>
+                                  <option value={field.fieldName} key={index}>{getRespectiveField(field.fieldName)}</option>
                               )}
                           </select>
                       </div>

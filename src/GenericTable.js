@@ -2,7 +2,7 @@
  * Created by rosia on 7/17/17.
  */
 import React, { Component } from 'react';
-import { getRespectiveField , displayOtherNodes , getTotal } from './utils/utilFunctions';
+import { getRespectiveField, displayOtherNodes , getTotal } from './utils/utilFunctions';
 
 
 class GenericTable extends Component {
@@ -29,7 +29,7 @@ class GenericTable extends Component {
                 <thead>
                     <tr>
                         <th>{getRespectiveField(this.props.nextIndex[1])}</th>
-                        <th>{this.state.valueField}</th>
+                        <th>{this.props.valueField}</th>
                     </tr>
                 </thead>
                 {
@@ -46,15 +46,28 @@ class GenericTable extends Component {
                             {
                                 this.state[`${firstRow}_${firstIndex}`] ?
                                     <tr className="gap">
-                                        {
-                                            Object.keys(this.props.pivotArray[firstRow]).map( (secondRow, secondIndex) =>
-                                                <div>
-                                                    <div>
-                                                        --> {this.props.pivotArray[firstRow][secondRow][ getRespectiveField(this.props.nextIndex[2]) ]} : {this.props.pivotArray[firstRow][secondRow][this.props.valueField]}
-                                                    </div>
-                                                </div>
-                                            )
-                                        }
+                                        <table className="gap table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>{getRespectiveField(this.props.nextIndex[2])}</th>
+                                                    <th>{this.props.valueField}</th>
+                                                </tr>
+                                            </thead>
+                                            {
+                                                Object.keys(this.props.pivotArray[firstRow]).map( (secondRow, secondIndex) =>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                {this.props.pivotArray[firstRow][secondRow][ getRespectiveField(this.props.nextIndex[2]) ]}
+                                                            </td>
+                                                            <td>
+                                                                {this.props.pivotArray[firstRow][secondRow][this.props.valueField]}
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                )
+                                            }
+                                        </table>
                                     </tr> : null
                             }
                         </tbody>
