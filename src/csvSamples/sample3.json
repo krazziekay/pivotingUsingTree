@@ -1,0 +1,202 @@
+[
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 6933,
+    "retail_outlet_title": "Fiza Pharmacy",
+    "product_title": "Vicks Vaporub - 50 gm",
+    "id_sku": 180,
+    "price": 1000,
+    "quantity": 10
+  },
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 6933,
+    "retail_outlet_title": "Fiza Pharmacy",
+    "product_title": "Whisper Choice - 8s (W)",
+    "id_sku": 93,
+    "price": 1200,
+    "quantity": 12
+  },
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 7161,
+    "retail_outlet_title": "Aryal Store",
+    "product_title": "Gillette Presto - 1's",
+    "id_sku": 62,
+    "price": 1200,
+    "quantity": 12
+  },
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 7161,
+    "retail_outlet_title": "Aryal Store",
+    "product_title": "Gillette 2 Disposable",
+    "id_sku": 60,
+    "price": 1200,
+    "quantity": 12
+  },
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 7161,
+    "retail_outlet_title": "Aryal Store",
+    "product_title": "Whisper Choice - 8s (W)",
+    "id_sku": 93,
+    "price": 1200,
+    "quantity": 12
+  },
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 7161,
+    "retail_outlet_title": "Aryal Store",
+    "product_title": "Whisper Choice W - 8's (90 pcs)",
+    "id_sku": 94,
+    "price": 1200,
+    "quantity": 12
+  },
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 7161,
+    "retail_outlet_title": "Aryal Store",
+    "product_title": "Whisper Ultra Wing - 8s",
+    "id_sku": 272,
+    "price": 1200,
+    "quantity": 12
+  },
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 7161,
+    "retail_outlet_title": "Aryal Store",
+    "product_title": "Gillette Super Thin Blade (5�)",
+    "id_sku": 66,
+    "price": 2000,
+    "quantity": 20
+  },
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 7319,
+    "retail_outlet_title": "Acharya Store",
+    "product_title": "Ariel - 500 gm",
+    "id_sku": 85,
+    "price": 600,
+    "quantity": 6
+  },
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 7319,
+    "retail_outlet_title": "Acharya Store",
+    "product_title": "H&S Shampoo - 5 ml (A.H.F.)",
+    "id_sku": 128,
+    "price": 4800,
+    "quantity": 48
+  },
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 7319,
+    "retail_outlet_title": "Acharya Store",
+    "product_title": "Pantene Shampoo - 5 ml (H.F.P.)",
+    "id_sku": 329,
+    "price": 4800,
+    "quantity": 48
+  },
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 7319,
+    "retail_outlet_title": "Acharya Store",
+    "product_title": "Whisper Choice - 8s (W)",
+    "id_sku": 93,
+    "price": 1200,
+    "quantity": 12
+  },
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 7319,
+    "retail_outlet_title": "Acharya Store",
+    "product_title": "Gillette Presto - 1's",
+    "id_sku": 62,
+    "price": 1200,
+    "quantity": 12
+  },
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 6416,
+    "retail_outlet_title": "Sharma Store",
+    "product_title": "Ariel - 12 gm",
+    "id_sku": 257,
+    "price": 600,
+    "quantity": 6
+  },
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 8682,
+    "retail_outlet_title": "Upatyaka Pharmacy",
+    "product_title": "Ariel - 12 gm",
+    "id_sku": 257,
+    "price": 300,
+    "quantity": 3
+  },
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 8669,
+    "retail_outlet_title": "Bhawani Cosmetics",
+    "product_title": "Ariel - 12 gm",
+    "id_sku": 257,
+    "price": 300,
+    "quantity": 3
+  },
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 6347,
+    "retail_outlet_title": "Purnima Store",
+    "product_title": "Ariel - 12 gm",
+    "id_sku": 257,
+    "price": 300,
+    "quantity": 3
+  },
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 7845,
+    "retail_outlet_title": "Gulmeli Pasal",
+    "product_title": "Ariel - 12 gm",
+    "id_sku": 257,
+    "price": 300,
+    "quantity": 3
+  },
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 8128,
+    "retail_outlet_title": "Glory Store",
+    "product_title": "Tide IN - 500 gm",
+    "id_sku": 88,
+    "price": 2400,
+    "quantity": 24
+  },
+  {
+    "id_distributor": 5,
+    "distributor_title": "Amazon Distributors Patan",
+    "id_retail_outlet": 8770,
+    "retail_outlet_title": "Sanchita Cosmetics",
+    "product_title": "Pantene Conditioner - 165 ml (S. S.C.)",
+    "id_sku": 132,
+    "price": 600,
+    "quantity": 6
+  }
+]
