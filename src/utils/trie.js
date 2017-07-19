@@ -1,8 +1,7 @@
 /**
  * Created by rosia on 7/4/17.
  */
-import uniqWith from 'lodash/uniqWith';
-import isEqual from 'lodash/isEqual';
+
 
 function Trie() {
     this.head = {
@@ -151,7 +150,6 @@ let recursiveTreeTraversing = (curNode, depth, resArr) => {
         if(nodeFlag && Object.keys(curNode[node].children).length >= 1) {//Condition to check for the children of the given node
             recursiveTreeTraversing(curNode[node].children, depth, resArr);
         }
-
     });
 }
 

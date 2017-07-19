@@ -42,6 +42,14 @@ export let getTotal = (dataArr, fieldName = 'FIELD8') => {
     return sum;
 }
 
+export let getPivotString = (dataArray, indexArray) => {
+    let str ='';
+    indexArray.map( (each) => {
+        str += `${dataArray[getRespectiveField(each)]}_`;
+    })
+    return str;
+}
+
 export let returnLastIndex = (arr) => {
     return arr[arr.length - 1];
 }

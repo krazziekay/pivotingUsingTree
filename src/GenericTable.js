@@ -45,7 +45,7 @@ class GenericTable extends Component {
                             </tr>
                             {
                                 this.state[`${firstRow}_${firstIndex}`] ?
-                                    <tr className="gap">
+                                    <tr className="gap"> 
                                         <table className="gap table table-bordered">
                                             <thead>
                                                 <tr>
