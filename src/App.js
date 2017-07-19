@@ -3,7 +3,6 @@ import data from './csvSamples/sample5.json';
 import Trie from './utils/trie';
 import _find from 'lodash/find';
 import _indexOf from 'lodash/indexOf';
-import GenericTable from './GenericTable';
 import { getRespectiveField , displayOtherNodes, returnLastIndex, getTotal, getPivotString } from './utils/utilFunctions';
 
 let tree = new Trie();
@@ -16,13 +15,14 @@ class App extends Component {
             data: data,
             depthArray : [],
             leafNodes: [],
+            valueField: 'FIELD7',
             columnPivotField: [],
             rowPivotField: [],
-            valueField: 'FIELD7',
             rowFields: [],
-            rowHeaders: [],
             columnFields: [],
-            columnHeaders : []
+            rowHeaders: [],
+            columnHeaders : [],
+            pivotedArray: []
         };
     }
 
@@ -221,7 +221,6 @@ class App extends Component {
                   </div>
 
                   <div className="col-md-10 bordered">
-                      Here is the table
                       <table className="table table-bordered med-font-size">
                           <tbody>
                           {//For the multiple rows in the column field
@@ -254,7 +253,11 @@ class App extends Component {
                                                   <td className="colored-bg">{row[index]}</td>
                                               )
                                           }
-
+                                          {
+                                              this.state.columnHeaders && this.state.columnHeaders.map((col, colIndex) =>
+                                                      <td> 'N/A' </td>
+                                                  )
+                                          }
 
                                       </tr>
                                   )
