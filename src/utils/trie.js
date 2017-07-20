@@ -13,17 +13,18 @@ function Trie() {
 }
 
 Trie.prototype.add = function(key, leafNodeValue, hashKey)  {
-
-    let curNode = this.head, newNode = null, curChar = key.slice(0,1), depthCount =1;
-
+    let curNode = this.head, newNode = null, curChar = key.slice(0,1);
+    let depthCount  = 1 ;
     key = key.slice(1);
 
-    while(typeof curNode.children[curChar] !== "undefined" && curChar.length > 0){
+    while(typeof curNode.children[curChar] !== 'undefined' && curChar.length > 0){
+        if(curNode.children[curChar].value) {
+            curNode.children[curChar].value = [].concat(curNode.children[curChar].value).concat(leafNodeValue);
+        }
         curNode = curNode.children[curChar];
-        curNode.depth = depthCount;
+        depthCount = curNode.depth + 1;
         curChar = key.slice(0,1);
         key = key.slice(1);
-        depthCount++;
     }
 
     while(curChar.length > 0) {
@@ -31,13 +32,13 @@ Trie.prototype.add = function(key, leafNodeValue, hashKey)  {
             key : curChar,
             value : key.length === 0 ? leafNodeValue : undefined,
             hashKey: key.length === 0 ? hashKey : '',
+            depth: depthCount,
             children: {}
         };
 
         curNode.children[curChar] = newNode;
-
         curNode = newNode;
-
+        depthCount++;
         curChar = key.slice(0,1);
         key = key.slice(1);
     }
@@ -104,7 +105,6 @@ Trie.prototype.groupByNodes = (fields, nodes) => {
     })
 }
 
-
 Trie.prototype.getLeafNodes = function (node = '') {
     let leafNodes = [];
     let curNode = node ? node : this.head.children;
@@ -143,7 +143,7 @@ let removeH = (node, key, depth) => {
 let recursiveTreeTraversing = (curNode, depth, resArr) => {
     Object.keys(curNode).forEach( (node) => {
         let nodeFlag = true;//Flag to stop the infinite loop
-        if(curNode[node].depth === depth) {//Condition for the recursive loop to break
+         if(curNode[node].depth === depth) {//Condition for the recursive loop to break
             resArr.push({[node]: curNode[node]});
             nodeFlag = false;
         }
