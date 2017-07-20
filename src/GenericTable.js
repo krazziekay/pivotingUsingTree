@@ -1,6 +1,6 @@
 /**
  * Created by rosia on 7/17/17.
- */
+ **/
 import React, { Component } from 'react';
 import { getRespectiveField, displayOtherNodes , getTotal } from './utils/utilFunctions';
 

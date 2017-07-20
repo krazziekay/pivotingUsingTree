@@ -1,6 +1,6 @@
 /**
  * Created by rosia on 7/4/17.
- */
+ **/
 
 
 function Trie() {
@@ -44,44 +44,10 @@ Trie.prototype.add = function(key, leafNodeValue, hashKey)  {
     }
 };
 
-Trie.prototype.search = function(key) {
-    let curNode = this.head, curChar = key.slice(0,1), d = 0;
-
-    key = key.slice(1);
-
-    while(typeof curNode.children[curChar] !== "undefined" && curChar.length > 0){
-        curNode = curNode.children[curChar];
-        curChar = key.slice(0,1);
-        key = key.slice(1);
-        d += 1;
-    }
-
-    if (curNode.value !== undefined && key.length === 0) {
-        return curNode;
-    } else {
-        return -1;
-    }
-}
-
-Trie.prototype.searchNode = function(key) {
-    let curNode = this.head, curChar = key.slice(0,1);
-
-    key = key.slice(1);
-
-    while(typeof curNode.children[curChar] !== "undefined" && curChar.length > 0){
-        curNode = curNode.children[curChar];
-        curChar = key.slice(0,1);
-        key = key.slice(1);
-    }
-
-    if(curNode.children) {
-        return curNode.children;
-    }
-    else{
-        return -1;
-    }
-}
-
+/**
+ * Depth First Search Traversal
+ * Done by using recursion
+ **/
 Trie.prototype.traverse= function(depth) {
     let resArr = [];
     let curNode = this.head.children;
@@ -89,63 +55,31 @@ Trie.prototype.traverse= function(depth) {
     return resArr;
 }
 
-Trie.prototype.groupByNodes = (fields, nodes) => {
-    let temp = {};
-    nodes.map( (node) => {
-        node.value.map( (record) => {
-            // fields.slice(1,fields.length).map( (field) => {
-            if(!temp[fields]) {
-                temp[fields] = record[fields];
-            }
-            else{
-                temp[fields] = [].concat(temp[fields]).concat(record[fields]);
-            }
-            // })
-        } )
-    })
-}
-
-Trie.prototype.getLeafNodes = function (node = '') {
+/**
+ * Also done by using recursion
+ **/
+Trie.prototype.getLeafNodes = function (node = '', valueFields) {
     let leafNodes = [];
     let curNode = node ? node : this.head.children;
-    recursiveLeafNodeTraversing(curNode, leafNodes);
+    recursiveLeafNodeTraversing(curNode, leafNodes, valueFields);
     return leafNodes;
 }
 
-Trie.prototype.remove = function(key) {
-    let d = this.search(key);
-    if (d > -1){
-        removeH(this.head, key, d);
-    }
-}
-
-let removeH = (node, key, depth) => {
-    if (depth === 0 && Object.keys(node.children).length === 0){
-        return true;
-    }
-
-    let curChar = key.slice(0,1);
-
-    if (removeH(node.children[curChar], key.slice(1), depth-1)) {
-        delete node.children[curChar];
-        if (Object.keys(node.children).length === 0) {
-            return true;
-        } else {
-            return false;
-        }
-    } else {
-        return false;
-    }
-}
-
-
-//Helper functions
+/**
+ * Recursive functions
+ */
+/**
+ * This function traverses according to the depth
+ * @param curNode
+ * @param depth
+ * @param resArr
+ */
 let recursiveTreeTraversing = (curNode, depth, resArr) => {
     Object.keys(curNode).forEach( (node) => {
         let nodeFlag = true;//Flag to stop the infinite loop
          if(curNode[node].depth === depth) {//Condition for the recursive loop to break
-            resArr.push({[node]: curNode[node]});
-            nodeFlag = false;
+             resArr.push({[node]: curNode[node]});
+             nodeFlag = false;
         }
         if(nodeFlag && Object.keys(curNode[node].children).length >= 1) {//Condition to check for the children of the given node
             recursiveTreeTraversing(curNode[node].children, depth, resArr);
@@ -153,13 +87,30 @@ let recursiveTreeTraversing = (curNode, depth, resArr) => {
     });
 }
 
-let recursiveLeafNodeTraversing = (curNode, leafNodes) => {
+/**
+ * This function traverses to the leaf node to get the leafNode Values
+ * @param curNode
+ * @param leafNodes
+ * @param valueFields
+ */
+let recursiveLeafNodeTraversing = (curNode, leafNodes, valueFields) => {
     Object.keys(curNode).forEach( (node) => {
         if(Object.keys(curNode[node].children).length >= 1) {//Condition to check for the children of the given node
-            recursiveLeafNodeTraversing(curNode[node].children, leafNodes);
+            recursiveLeafNodeTraversing(curNode[node].children, leafNodes, valueFields);
         }
         else{
-            leafNodes.push(curNode[node].value);
+            if(Array.isArray(curNode[node].value)) {
+                let combinedValueObj = curNode[node].value[0];
+                (curNode[node].value).slice(1).map( leaf => {
+                    valueFields.map( eachField => {
+                        combinedValueObj[eachField] = parseFloat(combinedValueObj[eachField]) + parseFloat(leaf[eachField]) ;
+                    })
+                });
+                leafNodes.push(combinedValueObj);
+            }
+            else {
+                leafNodes.push(curNode[node].value);
+            }
         }
     });
 }

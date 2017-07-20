@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import data from './csvSamples/sample5.json';
+import data from './csvSamples/sample6.json';
 import Trie from './utils/trie';
 import _find from 'lodash/find';
 import _indexOf from 'lodash/indexOf';
-import { getRespectiveField , displayOtherNodes, returnLastIndex, getTotal, getPivotString } from './utils/utilFunctions';
+import _includes from 'lodash/includes';
+import { getRespectiveField , create2DArrays , getPivotString } from './utils/utilFunctions';
 
 let tree = new Trie();
 const CODELENGTH = 6;
@@ -12,10 +13,10 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: data.slice(0, 1000),
+            data: data.slice(0, 10),
             depthArray : [],
             leafNodes: [],
-            valueField: 'FIELD7',
+            valueFields: ['quantity', 'price'],
             columnPivotField: [],
             rowPivotField: [],
             rowFields: [],
@@ -53,9 +54,9 @@ class App extends Component {
                     }, () => this.setColumnFields());
                 }
                 break;
-            case 'valueField' :
+            case 'valueFields' :
                 this.setState({
-                    valueField: e.target.value
+                    valueFields: e.target.value
                 });
                 break;
             default:
@@ -65,6 +66,13 @@ class App extends Component {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     *
+     This function converts each individual data into corresponding hashmap or ids, merges them
+     and creates a branch in the Trie after converting each data
+     * @param dataArray
+     * @returns {{tree: Trie, depth: Array}}
+     */
     convertDataIntoHashKeys = (dataArray) => {
         let depths = [];
         let keysLength = 0;
@@ -73,8 +81,8 @@ class App extends Component {
             let leafNodes = {}, depthIndex= 1;
             let hashKey = '';
             Object.keys(eachData).map( (props) => {
-                // if(_includes(props, 'id')) {
-                if(props === 'FIELD1' || props === 'FIELD3' || props === 'FIELD5') {
+                if(_includes(props, 'id')) {
+                // if(props === 'FIELD1' || props === 'FIELD3' || props === 'FIELD5') {
                     mergeFactor += this.encodeKeys(eachData[props]);
                     hashKey += this.encodeKeys(eachData[props]);
                     //Adding depths in each node in the tree
@@ -94,34 +102,41 @@ class App extends Component {
         return {tree: tree, depth: depths};
     }
 
+    /**
+     * This function encodes the ids of the given data
+     * @param keys
+     * @returns {string}
+     */
     encodeKeys = (keys) => {
         let zeroes = '000000';
         return zeroes.substr(0, zeroes.length - keys.length) + keys;
     }
 
+    /**
+     * These functions are for the data manipulation as per rowFields and columnFields
+     */
     setRowFields = () => {
         if(this.state.rowPivotField.length === 0) {
             let leafNodes = [];
             let searchDepthValue = _find(this.state.depthArray, {fieldName: this.state.rowFields[0]});
             let rowData = tree.traverse(searchDepthValue.depth);
             rowData.map( (eachNode, eachNodeIndex) => {
-                leafNodes[eachNodeIndex] = tree.getLeafNodes(eachNode);
+                leafNodes[eachNodeIndex] = tree.getLeafNodes(eachNode,this.state.valueFields);
             });
             let resultArray = this.getHeaders(this.state.rowFields, leafNodes);
             this.setState({
                 rowPivotField: leafNodes,
                 rowHeaders : resultArray
-            });
+            }, () => this.setResults());
         }
         else{
             let resultArray = this.getHeaders(this.state.rowFields, this.state.rowPivotField);
             this.setState({
                 rowHeaders: resultArray
-            }, () => console.log(this.state.columnHeaders, this.state.rowHeaders));
+            }, () => this.setResults());
          }
 
     }
-
     setColumnFields = () => {
         if(this.state.columnPivotField.length === 0) {
             let columns = [];
@@ -131,23 +146,29 @@ class App extends Component {
                 let columnData = tree.traverse(searchDepthValue.depth);
 
                 columns = columnData.map( (eachNode, eachNodeIndex) => {
-                    leafNodes[eachNodeIndex] = tree.getLeafNodes(eachNode);
+                    leafNodes[eachNodeIndex] = tree.getLeafNodes(eachNode,this.state.valueFields);
                 });
             });
             let resultArray = this.getHeaders(this.state.columnFields, leafNodes);
             this.setState({
                 columnPivotField: leafNodes,
                 columnHeaders : resultArray
-            });
+            }, () => this.setResults());
         }
         else {
             let resultArray = this.getHeaders(this.state.columnFields, this.state.columnPivotField);
             this.setState({
                 columnHeaders: resultArray
-            }, () => console.log(this.state.columnHeaders, this.state.rowHeaders));
+            }, () => this.setResults());
         }
     }
 
+    /**
+     * This helper function gets the required row/column Header data in desired array form
+     * @param fields
+     * @param pivotArray
+     * @returns {Array}
+     */
     getHeaders = (fields, pivotArray) => {
         let nextRows = [], resultArray = [];
         pivotArray.map( (pivotData) => {
@@ -162,15 +183,79 @@ class App extends Component {
         return resultArray;
     }
 
-    getResults = (row, col) => {
-        // console.log("Find the data for this row and col ", row, col);
+    // setResults = () => {
+    //     let results = create2DArrays(this.state.rowHeaders.length, this.state.columnHeaders.length);
+    //     if(this.state.rowHeaders && this.state.columnHeaders) {
+    //         this.state.rowHeaders.map( (row, rowIndex) => {
+    //             row.map( (eachRow) => {
+    //                 this.state.columnHeaders.map( (col, colIndex) => {
+    //                     col.map( (eachCol) => {
+    //                         this.state.rowPivotField.map( (data) =>{
+    //                             data.map( (eachData) => {
+    //                                 console.log("Got here", rowIndex, colIndex, eachData[this.state.valueFields[1]], results[rowIndex][colIndex]);
+    //                                 if( _indexOf(Object.values(eachData), eachRow) !== -1 && _indexOf(Object.values(eachData), eachCol) !== -1 ) {
+    //                                     console.log("Matched here", rowIndex, colIndex, eachData[this.state.valueFields[1]], results[rowIndex][colIndex]);
+    //                                     if(results[rowIndex][colIndex] === undefined) {
+    //                                         results[rowIndex][colIndex] = 0;
+    //                                     }
+    //                                     results[rowIndex][colIndex] = parseFloat(results[rowIndex][colIndex]) + parseFloat(eachData[this.state.valueFields[1]]);
+    //                                 }
+    //                             });
+    //                         });
+    //                     })
+    //                 });
+    //             })
+    //         });
+    //     }
+    //     this.setState({
+    //         pivotArray: results
+    //     }, () => console.log("Lets see the error : ", this.state.pivotArray));
+    // }
+
+    setResults = () => {
+        let results = create2DArrays(this.state.rowHeaders.length, this.state.columnHeaders.length);
+        if ( this.state.rowHeaders.length >= 1 && this.state.columnHeaders.length < 1 ) {
+            console.log("Only row");
+        }
+        else if ( this.state.columnHeaders.length >= 1 && this.state.rowHeaders.length < 1 ){
+            console.log("Only col");
+        }
+        else if( this.state.columnHeaders.length > 1 && this.state.rowHeaders.length > 1 ){
+            this.state.rowHeaders.map( (row, rowIndex) => {
+                this.state.columnHeaders.map( (col, colIndex) => {
+                    this.state.rowPivotField.map( (data) =>{
+                        data.map( (eachData) => {
+                            if(row.length === 1 && col.length === 1) {
+                                if( _indexOf(Object.values(eachData), row[0]) !== -1 && _indexOf(Object.values(eachData), col[0]) !== -1 ) {
+                                    if(results[rowIndex][colIndex] === undefined) {
+                                        results[rowIndex][colIndex] = 0;
+                                    }
+                                    results[rowIndex][colIndex] = parseFloat(results[rowIndex][colIndex]) + parseFloat(eachData[this.state.valueFields[1]]);
+                                }
+                            }
+                            else if(row.length > 1) {
+                                if( _indexOf(Object.values(eachData), row[0]) !== -1 && _indexOf(Object.values(eachData), col[0]) !== -1 && _indexOf(Object.values(eachData), row[1]) !== -1  ) {
+                                    if(results[rowIndex][colIndex] === undefined) {
+                                        results[rowIndex][colIndex] = 0;
+                                    }
+                                    results[rowIndex][colIndex] = parseFloat(results[rowIndex][colIndex]) + parseFloat(eachData[this.state.valueFields[1]]);
+                                }
+                            }
+                        });
+                    });
+                });
+            });
+        }
+        this.setState({
+            pivotArray: results
+        }, () => console.log("Lets see the error : ", this.state.pivotArray));
     }
 
     getLeafNodes = () => {
-        let leafNodes = tree.getLeafNodes();
+        let leafNodes = tree.getLeafNodes('', this.state.valueFields);
         this.setState({
             leafNodes: leafNodes
-        } );
+        }, () => console.log("Check the leaves ", (this.state.leafNodes)) );
     }
 
 
@@ -181,9 +266,9 @@ class App extends Component {
           <div className="App">
               <div className="row bordered">
                   <div className="col-md-2">
-                      <select className="form-control" name="valueField" onChange={this.onChange}>
-                          <option value="FIELD7" >FIELD7</option>
-                          <option value="FIELD8" >FIELD8</option>
+                      <select className="form-control" name="valueFields" onChange={this.onChange}>
+                          <option value="quantity" >quantity</option>
+                          <option value="price" >price</option>
                       </select>
                   </div>
                   <div className="col-md-10 row">
@@ -222,57 +307,61 @@ class App extends Component {
 
                   <div className="col-md-10 bordered">
                       <table className="table table-bordered med-font-size">
-                          <tbody>
                           {//For the multiple rows in the column field
-                              this.state.columnFields.map((_, index) =>
-                                  <tr>
-                                      {
-                                          //The number of gaps in the column fields
-                                          this.state.rowFields && this.state.rowFields.map((col, colIndex) =>
-                                              <td className="colored-bg"></td>
-                                          )
-                                      }
-                                      {
-                                          //The multi-layer row-wise viewing of the column fields
-                                          this.state.columnHeaders && this.state.columnHeaders.map((col, colIndex) =>
-                                              <td className="pointer colored-bg">
-                                                  {col[index]}
-                                              </td>
-                                          )
-                                      }
-
-                                  </tr>
+                              this.state.columnFields.map( (_, index) =>
+                                <tbody>
+                                        <tr>
+                                              {
+                                                  //The number of gaps in the column fields
+                                                  this.state.rowFields && this.state.rowFields.map((col, colIndex) =>
+                                                      <td className="colored-bg"></td>
+                                                  )
+                                              }
+                                              {
+                                                  //The multi-layer row-wise viewing of the column fields
+                                                  this.state.columnHeaders && this.state.columnHeaders.map((col, colIndex) =>
+                                                      <td className="pointer colored-bg">
+                                                          {col[index]}
+                                                      </td>
+                                                  )
+                                              }
+                                        </tr>
+                                    </tbody>
                               )
                           }
 
                           {
-                              this.state.rowHeaders && this.state.rowHeaders.map((row, rowIndex) =>
+                              this.state.rowHeaders && this.state.rowHeaders.map( (row, rowIndex) =>
+                                <tbody>
                                       <tr key={rowIndex}>
-                                          {
-                                              //For the multiple columns in the row field
-                                              this.state.rowFields.length !== 0 ?
-                                                  this.state.rowFields.map((_, index) =>
-                                                    <td className="colored-bg">{row[index]}</td>
-                                                  ) : null
-                                          }
-                                          {
-                                              this.state.columnHeaders.length !== 0 ?
-                                                  this.state.columnHeaders.map((col, colIndex) =>
+                                              {
+                                                  //For the multiple columns in the row field
+                                                  this.state.rowFields.length !== 0 ?
+                                                      this.state.rowFields.map((_, index) =>
+                                                        <td className="colored-bg">{row[index]}</td>
+                                                      ) : null
+                                              }
+                                              {
+                                                  this.state.columnHeaders.length !== 0 ?
+                                                      this.state.columnHeaders.map((col, colIndex) =>
+                                                          <td>
+                                                              {
+                                                                  this.state.pivotArray[rowIndex] ?
+                                                                      this.state.pivotArray[rowIndex][colIndex]
+                                                                      : null
+                                                              }
+                                                          </td>
+                                                      ) :
                                                       <td>
-                                                          {this.getResults(row, col)}
-                                                          {/*n/a*/}
+                                                          Here
+                                                          {/*{ this.state.pivotArray[rowIndex] }*/}
                                                       </td>
-                                                  ) :
-                                                  <td>
-                                                      {/*n/a*/}
-                                                      {this.getResults(row)}
-                                                  </td>
-                                          }
+                                              }
 
-                                      </tr>
-                                  )
+                                          </tr>
+                                  </tbody>
+                              )
                           }
-                          </tbody>
                       </table>
                   </div>
               </div>

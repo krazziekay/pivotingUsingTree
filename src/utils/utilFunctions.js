@@ -1,11 +1,9 @@
 /**
  * Created by rosia on 7/17/17.
- */
+ **/
 
-export let getRespectiveField = (fieldName = 'FIELD1') => {
-    let lastString = fieldName.substr(fieldName.length-1, fieldName.length);
-    let mappedIndex = parseInt(lastString) + 1;
-    return fieldName.substr(0, fieldName.length - 1) + mappedIndex;
+export let getRespectiveField = (fieldName = 'distributor_id') => {
+    return fieldName.substr(0, fieldName.length - 3);
 };
 
 export let displayOtherNodes = (relatedField, selectedIndex) => {
@@ -28,7 +26,7 @@ export let displayOtherNodes = (relatedField, selectedIndex) => {
     return temp;
 };
 
-export let getTotal = (dataArr, fieldName = 'FIELD8') => {
+export let getTotal = (dataArr, fieldName = 'quantity') => {
     let sum = 0;
     if(Array.isArray(dataArr)) {
         dataArr.map( (record) => {
@@ -50,6 +48,10 @@ export let getPivotString = (dataArray, indexArray) => {
     return str;
 }
 
-export let returnLastIndex = (arr) => {
-    return arr[arr.length - 1];
+export let create2DArrays = (rowLen, colLen) => {
+    let arr = new Array(rowLen);
+    for (let i=0;i<arr.length;i++) {
+        arr[i] = new Array(colLen);
+    }
+    return arr;
 }
