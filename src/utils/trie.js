@@ -102,9 +102,14 @@ let recursiveLeafNodeTraversing = (curNode, leafNodes, valueFields) => {
             if(Array.isArray(curNode[node].value)) {
                 let combinedValueObj = curNode[node].value[0];
                 (curNode[node].value).slice(1).map( leaf => {
-                    valueFields.map( eachField => {
-                        combinedValueObj[eachField] = parseFloat(combinedValueObj[eachField]) + parseFloat(leaf[eachField]) ;
-                    })
+                    if(Array.isArray(valueFields)) {
+                        valueFields.map( eachField => {
+                            combinedValueObj[eachField] = parseFloat(combinedValueObj[eachField]) + parseFloat(leaf[eachField]) ;
+                        })
+                    }
+                    else {
+                        combinedValueObj[valueFields] = parseFloat(combinedValueObj[valueFields]) + parseFloat(leaf[valueFields]) ;
+                    }
                 });
                 leafNodes.push(combinedValueObj);
             }

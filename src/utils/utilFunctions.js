@@ -26,20 +26,6 @@ export let displayOtherNodes = (relatedField, selectedIndex) => {
     return temp;
 };
 
-export let getTotal = (dataArr, fieldName = 'quantity') => {
-    let sum = 0;
-    if(Array.isArray(dataArr)) {
-        dataArr.map( (record) => {
-            sum += parseFloat(record[fieldName]);
-        })
-    }
-    else {
-        sum = dataArr[fieldName];
-    }
-    sum = Math.round(sum * 100) / 100;
-    return sum;
-}
-
 export let getPivotString = (dataArray, indexArray) => {
     let str ='';
     indexArray.map( (each) => {

@@ -13,10 +13,10 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: data.slice(0, 20),
+            data: data.slice(0,200),
             depthArray : [],
             leafNodes: [],
-            valueFields: ['quantity', 'price'],
+            valueFields: 'price',
             columnPivotField: [],
             rowPivotField: [],
             rowFields: [],
@@ -57,6 +57,14 @@ class App extends Component {
             case 'valueFields' :
                 this.setState({
                     valueFields: e.target.value
+                }, () => {
+                    if(this.state.rowHeaders.length>1){
+                        this.setRowFields();
+                    }
+                    if(this.state.columnHeaders.length>1){
+                        this.setColumnFields();
+                    }
+                    this.forceUpdate();
                 });
                 break;
             default:
@@ -114,6 +122,7 @@ class App extends Component {
      * These functions are for the data manipulation as per rowFields and columnFields
      */
     setRowFields = () => {
+        let startTime = performance.now();
         if(this.state.rowPivotField.length === 0) {
             let leafNodes = [];
             let searchDepthValue = _find(this.state.depthArray, {fieldName: this.state.rowFields[0]});
@@ -133,9 +142,10 @@ class App extends Component {
                 rowHeaders: resultArray
             }, () => this.setResults());
          }
-
+        console.log("Time taken : ", performance.now() - startTime );
     }
     setColumnFields = () => {
+        let startTime = performance.now();
         if(this.state.columnPivotField.length === 0) {
             let columns = [];
             let leafNodes = [];
@@ -159,6 +169,7 @@ class App extends Component {
                 columnHeaders: resultArray
             }, () => this.setResults());
         }
+        console.log("Time taken : ", performance.now() - startTime );
     }
 
     /**
@@ -196,7 +207,7 @@ class App extends Component {
                            if(results[rowIndex] === undefined) {
                                results[rowIndex] = 0;
                            }
-                           results[rowIndex] = parseFloat(results[rowIndex]) + parseFloat(eachData[this.state.valueFields[1]]);
+                           results[rowIndex] = parseFloat(results[rowIndex]) + parseFloat(eachData[this.state.valueFields]);
                        }
                    });
                });
@@ -212,7 +223,7 @@ class App extends Component {
                             if(results[colIndex] === undefined) {
                                 results[colIndex] = 0;
                             }
-                            results[colIndex] = parseFloat(results[colIndex]) + parseFloat(eachData[this.state.valueFields[1]]);
+                            results[colIndex] = parseFloat(results[colIndex]) + parseFloat(eachData[this.state.valueFields]);
                         }
                     });
                 });
@@ -228,7 +239,7 @@ class App extends Component {
                                 if(results[rowIndex][colIndex] === undefined) {
                                     results[rowIndex][colIndex] = 0;
                                 }
-                                results[rowIndex][colIndex] = parseFloat(results[rowIndex][colIndex]) + parseFloat(eachData[this.state.valueFields[1]]);
+                                results[rowIndex][colIndex] = parseFloat(results[rowIndex][colIndex]) + parseFloat(eachData[this.state.valueFields]);
                             }
                         });
                     });
@@ -259,8 +270,8 @@ class App extends Component {
               <div className="row bordered">
                   <div className="col-md-2">
                       <select className="form-control" name="valueFields" onChange={this.onChange}>
+                          <option value="price " >price</option>
                           <option value="quantity" >quantity</option>
-                          <option value="price" >price</option>
                       </select>
                   </div>
                   <div className="col-md-10 row">
