@@ -4,7 +4,7 @@ import Trie from './utils/trie';
 import _find from 'lodash/find';
 import _indexOf from 'lodash/indexOf';
 import _includes from 'lodash/includes';
-import { getRespectiveField , create2DArrays , getPivotString } from './utils/utilFunctions';
+import { getRespectiveField , create2DArrays , getPivotString , checkSubset } from './utils/utilFunctions';
 
 let tree = new Trie();
 const CODELENGTH = 6;
@@ -13,7 +13,7 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: data.slice(0, 10),
+            data: data.slice(0, 20),
             depthArray : [],
             leafNodes: [],
             valueFields: ['quantity', 'price'],
@@ -82,11 +82,9 @@ class App extends Component {
             let hashKey = '';
             Object.keys(eachData).map( (props) => {
                 if(_includes(props, 'id')) {
-                // if(props === 'FIELD1' || props === 'FIELD3' || props === 'FIELD5') {
                     mergeFactor += this.encodeKeys(eachData[props]);
                     hashKey += this.encodeKeys(eachData[props]);
-                    //Adding depths in each node in the tree
-                    if( keysLength < Object.keys(eachData).length ) {
+                    if( keysLength < Object.keys(eachData).length ) {//Adding depths in each node in the tree
                         depths.push({ fieldName: props, depth: CODELENGTH * (depthIndex) });
                         depthIndex++;
                     }
@@ -183,63 +181,54 @@ class App extends Component {
         return resultArray;
     }
 
-    // setResults = () => {
-    //     let results = create2DArrays(this.state.rowHeaders.length, this.state.columnHeaders.length);
-    //     if(this.state.rowHeaders && this.state.columnHeaders) {
-    //         this.state.rowHeaders.map( (row, rowIndex) => {
-    //             row.map( (eachRow) => {
-    //                 this.state.columnHeaders.map( (col, colIndex) => {
-    //                     col.map( (eachCol) => {
-    //                         this.state.rowPivotField.map( (data) =>{
-    //                             data.map( (eachData) => {
-    //                                 console.log("Got here", rowIndex, colIndex, eachData[this.state.valueFields[1]], results[rowIndex][colIndex]);
-    //                                 if( _indexOf(Object.values(eachData), eachRow) !== -1 && _indexOf(Object.values(eachData), eachCol) !== -1 ) {
-    //                                     console.log("Matched here", rowIndex, colIndex, eachData[this.state.valueFields[1]], results[rowIndex][colIndex]);
-    //                                     if(results[rowIndex][colIndex] === undefined) {
-    //                                         results[rowIndex][colIndex] = 0;
-    //                                     }
-    //                                     results[rowIndex][colIndex] = parseFloat(results[rowIndex][colIndex]) + parseFloat(eachData[this.state.valueFields[1]]);
-    //                                 }
-    //                             });
-    //                         });
-    //                     })
-    //                 });
-    //             })
-    //         });
-    //     }
-    //     this.setState({
-    //         pivotArray: results
-    //     }, () => console.log("Lets see the error : ", this.state.pivotArray));
-    // }
-
+    /**
+     * This function gets the required data for given row(s) and given column(s)
+     */
     setResults = () => {
         let results = create2DArrays(this.state.rowHeaders.length, this.state.columnHeaders.length);
         if ( this.state.rowHeaders.length >= 1 && this.state.columnHeaders.length < 1 ) {
-            console.log("Only row");
-        }
+           results = [];
+           this.state.rowHeaders.map( (row, rowIndex) => {
+               this.state.rowPivotField.map( (data) =>{
+                   data.map( (eachData) => {
+                       let combinedRowCol = [].concat(row);
+                       if( checkSubset( Object.values(eachData), combinedRowCol) ) {
+                           if(results[rowIndex] === undefined) {
+                               results[rowIndex] = 0;
+                           }
+                           results[rowIndex] = parseFloat(results[rowIndex]) + parseFloat(eachData[this.state.valueFields[1]]);
+                       }
+                   });
+               });
+           })
+       }
         else if ( this.state.columnHeaders.length >= 1 && this.state.rowHeaders.length < 1 ){
-            console.log("Only col");
+            results = [];
+            this.state.columnHeaders.map( (col, colIndex) => {
+                this.state.columnPivotField.map( (data) =>{
+                    data.map( (eachData) => {
+                        let combinedRowCol = [].concat(col);
+                        if( checkSubset( Object.values(eachData), combinedRowCol) ) {
+                            if(results[colIndex] === undefined) {
+                                results[colIndex] = 0;
+                            }
+                            results[colIndex] = parseFloat(results[colIndex]) + parseFloat(eachData[this.state.valueFields[1]]);
+                        }
+                    });
+                });
+            })
         }
         else if( this.state.columnHeaders.length > 1 && this.state.rowHeaders.length > 1 ){
             this.state.rowHeaders.map( (row, rowIndex) => {
                 this.state.columnHeaders.map( (col, colIndex) => {
                     this.state.rowPivotField.map( (data) =>{
                         data.map( (eachData) => {
-                            if(row.length === 1 && col.length === 1) {
-                                if( _indexOf(Object.values(eachData), row[0]) !== -1 && _indexOf(Object.values(eachData), col[0]) !== -1 ) {
-                                    if(results[rowIndex][colIndex] === undefined) {
-                                        results[rowIndex][colIndex] = 0;
-                                    }
-                                    results[rowIndex][colIndex] = parseFloat(results[rowIndex][colIndex]) + parseFloat(eachData[this.state.valueFields[1]]);
+                            let combinedRowCol = [].concat(row).concat(col);
+                            if( checkSubset( Object.values(eachData), combinedRowCol) ) {
+                                if(results[rowIndex][colIndex] === undefined) {
+                                    results[rowIndex][colIndex] = 0;
                                 }
-                            }
-                            else if(row.length > 1) {
-                                if( _indexOf(Object.values(eachData), row[0]) !== -1 && _indexOf(Object.values(eachData), col[0]) !== -1 && _indexOf(Object.values(eachData), row[1]) !== -1  ) {
-                                    if(results[rowIndex][colIndex] === undefined) {
-                                        results[rowIndex][colIndex] = 0;
-                                    }
-                                    results[rowIndex][colIndex] = parseFloat(results[rowIndex][colIndex]) + parseFloat(eachData[this.state.valueFields[1]]);
-                                }
+                                results[rowIndex][colIndex] = parseFloat(results[rowIndex][colIndex]) + parseFloat(eachData[this.state.valueFields[1]]);
                             }
                         });
                     });
@@ -248,14 +237,17 @@ class App extends Component {
         }
         this.setState({
             pivotArray: results
-        }, () => console.log("Lets see the error : ", this.state.pivotArray));
+        });
     }
 
+    /**
+     * This function gets the leafNodes of the tree
+     */
     getLeafNodes = () => {
         let leafNodes = tree.getLeafNodes('', this.state.valueFields);
         this.setState({
             leafNodes: leafNodes
-        }, () => console.log("Check the leaves ", (this.state.leafNodes)) );
+        } );
     }
 
 
@@ -331,6 +323,22 @@ class App extends Component {
                           }
 
                           {
+                              this.state.rowHeaders.length === 0 ?
+                                  <tbody>
+                                      <tr>
+                                          {
+                                              this.state.pivotArray && this.state.pivotArray.map( col =>
+                                                  <td>
+                                                      {col}
+                                                  </td>
+                                              )
+                                          }
+                                      </tr>
+                                  </tbody>
+                                  : null
+                          }
+
+                          {
                               this.state.rowHeaders && this.state.rowHeaders.map( (row, rowIndex) =>
                                 <tbody>
                                       <tr key={rowIndex}>
@@ -352,12 +360,11 @@ class App extends Component {
                                                               }
                                                           </td>
                                                       ) :
-                                                      <td>
-                                                          Here
-                                                          {/*{ this.state.pivotArray[rowIndex] }*/}
-                                                      </td>
+                                                      this.state.pivotArray &&
+                                                        <td>
+                                                            {this.state.pivotArray[rowIndex]}
+                                                        </td>
                                               }
-
                                           </tr>
                                   </tbody>
                               )

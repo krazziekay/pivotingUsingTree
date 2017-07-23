@@ -48,6 +48,15 @@ export let getPivotString = (dataArray, indexArray) => {
     return str;
 }
 
+export let checkSubset = (superset, subset) => {
+    if (0 === subset.length) {
+        return false;
+    }
+    return subset.every( (value) => {
+        return (superset.indexOf(value) >= 0);
+    });
+}
+
 export let create2DArrays = (rowLen, colLen) => {
     let arr = new Array(rowLen);
     for (let i=0;i<arr.length;i++) {
