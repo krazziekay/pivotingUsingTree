@@ -7,13 +7,14 @@ import _includes from 'lodash/includes';
 import { getRespectiveField , create2DArrays , getPivotString , checkSubset } from './utils/utilFunctions';
 
 let tree = new Trie();
+let startTime = '';
 const CODELENGTH = 6;
 
 class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: data.slice(0,200),
+            data: data.slice(0, 300),
             depthArray : [],
             leafNodes: [],
             valueFields: 'price',
@@ -23,14 +24,13 @@ class App extends Component {
             columnFields: [],
             rowHeaders: [],
             columnHeaders : [],
-            pivotedArray: []
+            pivotArray: []
         };
     }
 
     componentDidMount() {
         let convertedHashKeys = this.convertDataIntoHashKeys(this.state.data);
         this.setState({
-            data: [],
             tree : convertedHashKeys.tree,
             depthArray: convertedHashKeys.depth
         }, () => {
@@ -39,6 +39,7 @@ class App extends Component {
     }
 
     onChange = (e) => {
+        startTime = performance.now();
         switch(e.target.name) {
             case 'rowField' :
                 if (_indexOf(this.state.rowFields, e.target.value) === -1 && _indexOf(this.state.columnFields, e.target.value) === -1) {
@@ -122,7 +123,6 @@ class App extends Component {
      * These functions are for the data manipulation as per rowFields and columnFields
      */
     setRowFields = () => {
-        let startTime = performance.now();
         if(this.state.rowPivotField.length === 0) {
             let leafNodes = [];
             let searchDepthValue = _find(this.state.depthArray, {fieldName: this.state.rowFields[0]});
@@ -142,10 +142,8 @@ class App extends Component {
                 rowHeaders: resultArray
             }, () => this.setResults());
          }
-        console.log("Time taken : ", performance.now() - startTime );
     }
     setColumnFields = () => {
-        let startTime = performance.now();
         if(this.state.columnPivotField.length === 0) {
             let columns = [];
             let leafNodes = [];
@@ -169,7 +167,6 @@ class App extends Component {
                 columnHeaders: resultArray
             }, () => this.setResults());
         }
-        console.log("Time taken : ", performance.now() - startTime );
     }
 
     /**
@@ -246,9 +243,38 @@ class App extends Component {
                 });
             });
         }
-        this.setState({
-            pivotArray: results
+        this.changeDataToViewFormat(this.state.rowHeaders, this.state.rowFields, this.state.columnHeaders, this.state.columnFields, results);
+    }
+
+
+    changeDataToViewFormat = (rowHeaders, rowFields, columnHeaders, columnFields, mainData) => {
+        let columnResults = [];
+        columnFields && columnFields.map( (_, index) => {
+            columnResults[index] = columnHeaders.map((col, colIndex) => col[index]);
         });
+        if(rowHeaders.length === 0) {
+            columnResults.push(mainData.map( (data, ind) => data));
+        }
+
+        let rowResults = [];
+        rowHeaders && rowHeaders.map( (row, rowIndex) => {
+            if(rowFields.length !== 0) {
+                rowResults[rowIndex] = rowFields.map((_, index) => row[index]);
+            }
+            if(columnHeaders.length !== 0) {
+                row.map( _ => {
+                    rowResults[rowIndex] = rowResults[rowIndex] ? [].concat(rowResults[rowIndex]).concat( columnHeaders.map( (_, colIndex) => mainData[rowIndex][colIndex]) ) : '';
+                });
+            }
+            else {
+                rowResults[rowIndex].push(mainData[rowIndex]);
+            }
+        });
+        console.log("Time taken : ", performance.now() - startTime );
+        this.setState( {
+            pivotArray: [].concat(columnResults).concat(rowResults)
+        })
+        console.log("Each pivoted data is : ",  [].concat(columnResults).concat(rowResults));
     }
 
     /**
@@ -270,7 +296,7 @@ class App extends Component {
               <div className="row bordered">
                   <div className="col-md-2">
                       <select className="form-control" name="valueFields" onChange={this.onChange}>
-                          <option value="price " >price</option>
+                          <option value="price" >price</option>
                           <option value="quantity" >quantity</option>
                       </select>
                   </div>
@@ -282,7 +308,7 @@ class App extends Component {
                       }
                       <div className="col-md-3">
                           <select className="form-control" name="columnField" onChange={this.onChange}>
-                              <option selected="selected">--Select an option--</option>
+                              <option selected="selected" disabled="disabled">--Select an option--</option>
                               {this.state.depthArray.map( (field, index) =>
                                   <option value={field.fieldName} key={index}>{getRespectiveField(field.fieldName)}</option>
                               )}
@@ -300,7 +326,7 @@ class App extends Component {
                       }
                       <div className="col-md-12">
                           <select className="form-control" name="rowField" onChange={this.onChange}>
-                              <option selected="selected">--Select an option--</option>
+                              <option selected="selected" disabled="disabled">--Select an option--</option>
                               {this.state.depthArray.map( (field, index) =>
                                   <option value={field.fieldName} key={index}>{getRespectiveField(field.fieldName)}</option>
                               )}
@@ -308,80 +334,99 @@ class App extends Component {
                       </div>
                   </div>
 
-                  <div className="col-md-10 bordered">
-                      <table className="table table-bordered med-font-size">
-                          {//For the multiple rows in the column field
-                              this.state.columnFields.map( (_, index) =>
-                                <tbody>
-                                        <tr>
-                                              {
-                                                  //The number of gaps in the column fields
-                                                  this.state.rowFields && this.state.rowFields.map((col, colIndex) =>
-                                                      <td className="colored-bg"></td>
-                                                  )
-                                              }
-                                              {
-                                                  //The multi-layer row-wise viewing of the column fields
-                                                  this.state.columnHeaders && this.state.columnHeaders.map((col, colIndex) =>
-                                                      <td className="pointer colored-bg">
-                                                          {col[index]}
-                                                      </td>
-                                                  )
-                                              }
-                                        </tr>
-                                    </tbody>
-                              )
-                          }
-
-                          {
-                              this.state.rowHeaders.length === 0 ?
-                                  <tbody>
-                                      <tr>
-                                          {
-                                              this.state.pivotArray && this.state.pivotArray.map( col =>
-                                                  <td>
-                                                      {col}
-                                                  </td>
-                                              )
-                                          }
-                                      </tr>
-                                  </tbody>
-                                  : null
-                          }
-
-                          {
-                              this.state.rowHeaders && this.state.rowHeaders.map( (row, rowIndex) =>
-                                <tbody>
-                                      <tr key={rowIndex}>
-                                              {
-                                                  //For the multiple columns in the row field
-                                                  this.state.rowFields.length !== 0 ?
-                                                      this.state.rowFields.map((_, index) =>
-                                                        <td className="colored-bg">{row[index]}</td>
-                                                      ) : null
-                                              }
-                                              {
-                                                  this.state.columnHeaders.length !== 0 ?
-                                                      this.state.columnHeaders.map((col, colIndex) =>
-                                                          <td>
-                                                              {
-                                                                  this.state.pivotArray[rowIndex] ?
-                                                                      this.state.pivotArray[rowIndex][colIndex]
-                                                                      : null
-                                                              }
-                                                          </td>
-                                                      ) :
-                                                      this.state.pivotArray &&
-                                                        <td>
-                                                            {this.state.pivotArray[rowIndex]}
-                                                        </td>
-                                              }
-                                          </tr>
-                                  </tbody>
-                              )
-                          }
-                      </table>
+                  <div className="col-md-8 bordered">
+                      {
+                          this.state.pivotArray && this.state.pivotArray.map( data =>
+                              <div className="row">
+                                  <span className="gap row">
+                                      {
+                                          data.map( eachData =>
+                                              <span className="gap">{eachData}</span>
+                                          )
+                                      }
+                                  </span>
+                              </div>
+                          )
+                      }
                   </div>
+
+
+                  {/*<div className="col-md-10 bordered">*/}
+                      {/*<table className="table table-bordered med-font-size">*/}
+                          {/*{//For the multiple rows in the column field*/}
+                              {/*this.state.columnFields.map( (_, index) =>*/}
+                                {/*<tbody>*/}
+                                        {/*<tr key={index}>*/}
+                                              {/*{*/}
+                                                  {/*//The number of gaps in the column fields*/}
+                                                  {/*this.state.rowFields && this.state.rowFields.map((col, colIndex) =>*/}
+                                                      {/*<td className="colored-bg" key={colIndex}></td>*/}
+                                                  {/*)*/}
+                                              {/*}*/}
+                                              {/*{*/}
+                                                  {/*//The multi-layer row-wise viewing of the column fields*/}
+                                                  {/*this.state.columnHeaders && this.state.columnHeaders.map((col, colIndex) =>*/}
+                                                      {/*<td className="pointer colored-bg" key={colIndex}>*/}
+                                                          {/*{col[index]}*/}
+                                                      {/*</td>*/}
+                                                  {/*)*/}
+                                              {/*}*/}
+                                        {/*</tr>*/}
+                                    {/*</tbody>*/}
+                              {/*)*/}
+                          {/*}*/}
+
+                          {/*{*/}
+                              {/*this.state.rowHeaders.length === 0 ?*/}
+                                  {/*<tbody>*/}
+                                      {/*<tr>*/}
+                                          {/*{*/}
+                                              {/*this.state.pivotArray && this.state.pivotArray.map( (col, index) =>*/}
+                                                  {/*<td key={index}>*/}
+                                                      {/*{col}*/}
+                                                  {/*</td>*/}
+                                              {/*)*/}
+                                          {/*}*/}
+                                      {/*</tr>*/}
+                                  {/*</tbody>*/}
+                                  {/*: null*/}
+                          {/*}*/}
+
+                          {/*{*/}
+                              {/*this.state.rowHeaders && this.state.rowHeaders.map( (row, rowIndex) =>*/}
+                                {/*<tbody>*/}
+                                      {/*<tr key={rowIndex}>*/}
+                                              {/*{*/}
+                                                  {/*//For the multiple columns in the row field*/}
+                                                  {/*this.state.rowFields.length !== 0 ?*/}
+                                                      {/*this.state.rowFields.map((_, index) =>*/}
+                                                        {/*<td className="colored-bg" key={index}>{row[index]}</td>*/}
+                                                      {/*) : null*/}
+                                              {/*}*/}
+                                              {/*{*/}
+                                                  {/*this.state.columnHeaders.length !== 0 ?*/}
+                                                      {/*this.state.columnHeaders.map((col, colIndex) =>*/}
+                                                          {/*<td key={colIndex}>*/}
+                                                              {/*{*/}
+                                                                  {/*this.state.pivotArray[rowIndex] ?*/}
+                                                                      {/*this.state.pivotArray[rowIndex][colIndex]*/}
+                                                                      {/*: null*/}
+                                                              {/*}*/}
+                                                          {/*</td>*/}
+                                                      {/*) :*/}
+                                                      {/*this.state.pivotArray &&*/}
+                                                        {/*<td key={rowIndex}>*/}
+                                                            {/*{this.state.pivotArray[rowIndex]}*/}
+                                                        {/*</td>*/}
+                                              {/*}*/}
+                                          {/*</tr>*/}
+                                  {/*</tbody>*/}
+                              {/*)*/}
+                          {/*}*/}
+                      {/*</table>*/}
+                  {/*</div>*/}
+
+
               </div>
 
 
